@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Provision the machine.
   config.vm.provision :shell, path: "provisioner.sh"
   # Add port forwarding.
-  config.vm.network :forwarded_port, host: 4567, guest: 80
+  config.vm.network :forwarded_port, host:5000, guest:80, host_ip:"127.0.0.1"
   # Allow forwarding to host X11 windowing system.
   config.ssh.forward_x11 = true
   # Allow ssh forwarding for GitHub cloning.

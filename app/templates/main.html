@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Mini Vax</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+
+<div id="container" style="position: relative; width: 500px; height: 300px;"></div>
+
+<script>
+
+   var homeSVG = d3.select("body").append("svg")
+       .attr("class", "homeSVG")
+       .attr({
+           "width": "100%",
+           "height": "87.5%"  //footer takes ~12.5% of the page
+       })
+       .attr("viewBox", "0 0 " + 500 + " " + 500 )
+       .attr("pointer-events", "all")
+       .style("position", "absolute")
+
+
+
+    var frontCharge = -30000;
+
+    frontGraph = {};
+    frontNodes = [{id:0}, {id:1}, {id:2}, {id:3}];
+
+    frontLinks = [
+
+    {
+        source:frontNodes[0],
+        target:frontNodes[1]
+    },
+
+    {
+        source:frontNodes[1],
+        target:frontNodes[2]
+    },
+
+    {
+        source:frontNodes[2],
+        target:frontNodes[0]
+    },
+
+    {
+        source:frontNodes[1],
+        target:frontNodes[3]
+    }
+    ];
+
+    frontGraph.nodes = frontNodes;
+    frontGraph.links = frontLinks;
+
+    frontForce = d3.layout.force()
+        .nodes(frontGraph.nodes)
+        .links(frontGraph.links)
+        .size([500, 500])
+        .charge(frontCharge)
+        .friction(0.80)
+        .on("tick", frontTick)
+        .start();
+
+    // associate empty SVGs with link data. assign attributes.
+    frontLink = homeSVG.selectAll(".link")
+        .data(frontGraph.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style("fill", "#707070")
+        .style("stroke-width", "10px")
+        .style("stroke", "#d5d5d5")
+
+    // associate empty SVGs with node data. assign attributes. call force.drag to make them moveable.
+    frontNode = homeSVG.selectAll(".node")
+        .data(frontGraph.nodes)
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", 50)
+        .style("stroke", "#b7b7b7")
+        .style("stroke-width", "10px")
+        .attr("fill", function(d) {
+            if (d.id == 3) return "#f1d2d2"
+            else return "#d5d5d5"
+        })
+        .call(frontForce.drag)
+
+
+    function frontTick() {
+
+        frontNode.attr("cx", function(d) { return d.x = Math.max(8, Math.min(500 - 50, d.x)); })
+            .attr("cy", function(d) { return d.y = Math.max(8, Math.min(500 - 50, d.y)); });
+
+
+        frontLink.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+
+    }
+</script>
+
+</body>
+</html>
